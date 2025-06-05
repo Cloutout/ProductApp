@@ -1,8 +1,9 @@
 ﻿ using ProductApp.Domain.Aggregates.Product.ValueObject;
+using ProductApp.Domain.Base;
 
  namespace ProductApp.Domain.Aggregates.Product
 {
-    public class Product
+    public class Product : IAggregateRoot
     {
         public Guid Id { get; private set; }
         public string Name { get; private set; }

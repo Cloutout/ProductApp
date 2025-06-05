@@ -1,11 +1,11 @@
 ﻿using ProductApp.Domain.Aggregates.Product.ValueObject;
 
-namespace ProductApp.Application.Products.Outputs
+namespace ProductApp.Api.Models.Requests
 {
-    public class GetProductsQueryOutput
+    public class CreateProductRequest
     {
         public string Name { get; set; }
         public decimal Price { get; set; }
-        public Stock Stock{ get; set; }
+        public int Stock { get; set; }
     }
 }

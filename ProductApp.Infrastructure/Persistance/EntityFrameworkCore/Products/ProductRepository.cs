@@ -9,7 +9,8 @@ namespace ProductApp.Infrastructure.Persistance.EntityFrameworkCore.Products
     {
         private readonly ProductDbContext _context = context;
 
-        public async Task AddAsync(Product product)
+
+        public async Task CreateAsync(Product product)
         {
             await _context.Products.AddAsync(product);
         }

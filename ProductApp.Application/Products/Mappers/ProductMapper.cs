@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProductApp.Application.Products.Mappers
 {
-    internal class ProductMapper
+    public class ProductMapper
     {
     }
 }

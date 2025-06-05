@@ -11,12 +11,5 @@
             Size = size;
         }
 
-        public static PaginationInput Create(uint? number, uint? size)
-        {
-            var pageNumber = (int)(number is null or 0 ? 1 : number);
-            var pageSize = (int)(size is null or 0 ? 25 : size);
-
-            return new(pageNumber, pageSize);
-        }
     }
 }

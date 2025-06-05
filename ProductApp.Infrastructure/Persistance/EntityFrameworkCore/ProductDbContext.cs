@@ -16,10 +16,9 @@ namespace ProductApp.Infrastructure.Persistance.EntityFrameworkCore
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
         }
 
-        public async Task<bool> SaveChangeAsync(CancellationToken cancellationToken = default)
+        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            await SaveChangesAsync(cancellationToken);
-            return true;
+            return await base.SaveChangesAsync(cancellationToken);
         }
     }
 }
