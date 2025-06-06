@@ -10,15 +10,15 @@ public sealed class Product : IAggregateRoot
     public Money Price { get; private set; }
     public int Stock { get; private set; }
 
-    private Product() { } // EF Core için boş constroctor
+    private Product() { } // EF Core için
 
     public Product(string name, Money price, int stock)
     {
-        if (string.IsNullOrEmpty(name))
+        if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Ürün ismi boş olamaz");
 
-        if (name.Length > 100)
-            throw new ArgumentException("ürün ismi 100 karakterden fazla olamaz");
+        if (stock < 0)
+            throw new ArgumentException("Stok 0'dan küçük olamaz");
 
         Name = name;
         Price = price;
@@ -27,9 +27,9 @@ public sealed class Product : IAggregateRoot
 
     public static Product Create(ProductCreateModel model)
     {
-        return new Product(model.Name, model.Price, model.Stock);
+        var price = new Money(model.Price);
+        return new Product(model.Name, price, model.Stock);
     }
-    
 }
 
 public sealed class ProductCreateModel

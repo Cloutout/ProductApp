@@ -10,8 +10,7 @@ public class ProductMapper
     {
         return new GetProductByFilterRequestModel
         {
-            
-            Page = input.PageNumber,
+            PageNumber = input.PageNumber,
             PageSize = input.PageSize
         };
     }
@@ -22,19 +21,15 @@ public class ProductMapper
         {
             Id = x.Id,
             Name = x.Name,
-            Price = (long)x.Price.Amount,
+            Price = x.Price.Amount,
             Stock = x.Stock
-
         }).ToList();
-
-        var totalPages = (int)Math.Ceiling((double)responseModel.TotalCount / responseModel.PageSize);
 
         return new GetProductsQueryOutput
         {
             Products = productOutputs,
             PageNumber = responseModel.PageNumber,
-            PageSize = responseModel.PageSize,
-            
+            PageSize = responseModel.PageSize
         };
     }
 }

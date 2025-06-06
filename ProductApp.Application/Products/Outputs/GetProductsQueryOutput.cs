@@ -1,11 +1,8 @@
-﻿using ProductApp.Domain.Aggregates.Product.ValueObject;
+﻿namespace ProductApp.Application.Products.Outputs;
 
-namespace ProductApp.Application.Products.Outputs
+public class GetProductsQueryOutput
 {
-    public class GetProductsQueryOutput
-    {
-        public string Name { get; set; }
-        public decimal Price { get; set; }
-        public Stock Stock{ get; set; }
-    }
+    public List<ProductOutput> Products { get; set; } = new();
+    public int PageNumber { get; set; }
+    public int PageSize { get; set; }
 }
