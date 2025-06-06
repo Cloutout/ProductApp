@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <Folder Include="Products\Exceptions\" />
-    <Folder Include="Products\Models\" />
   </ItemGroup>
 
 </Project>

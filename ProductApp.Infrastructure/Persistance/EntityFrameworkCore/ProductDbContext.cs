@@ -7,18 +7,13 @@ namespace ProductApp.Infrastructure.Persistance.EntityFrameworkCore
 {
     public class ProductDbContext : DbContext, IUnitOfWork
     {
-        public DbSet<Product> Products { get; set; }
-
         public ProductDbContext(DbContextOptions<ProductDbContext> options) : base(options) { }
+
+        public DbSet<Product> Products { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
+            base.OnModelCreating(modelBuilder);
         }
-
-        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            return await base.SaveChangesAsync(cancellationToken);
-        }
-    }
 }

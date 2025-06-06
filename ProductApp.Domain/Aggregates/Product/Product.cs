@@ -1,31 +1,40 @@
-﻿ using ProductApp.Domain.Aggregates.Product.ValueObject;
+﻿using ProductApp.Domain.Aggregates.Product.ValueObject;
 using ProductApp.Domain.Base;
 
- namespace ProductApp.Domain.Aggregates.Product
+namespace ProductApp.Domain.Aggregates.Product;
+
+public sealed class Product : IAggregateRoot
 {
-    public class Product : IAggregateRoot
+    public Guid Id { get; private set; } = Guid.NewGuid();
+    public string Name { get; private set; }
+    public Money Price { get; private set; }
+    public int Stock { get; private set; }
+
+    private Product() { } // EF Core için boş constroctor
+
+    public Product(string name, Money price, int stock)
     {
-        public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public decimal Price { get; private set; }
-        public Stock Stock { get; private set; }
+        if (string.IsNullOrEmpty(name))
+            throw new ArgumentException("Ürün ismi boş olamaz");
 
-        private Product(){ }// EF Core için gerekli boş constructor
-        //bunun icinin bos olmasinin sebebi efcore varlik olustururken parametresiz constructor kullanir reflection icin
+        if (name.Length > 100)
+            throw new ArgumentException("ürün ismi 100 karakterden fazla olamaz");
 
-        public Product(string name, decimal price, Stock stock)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Ürün adı boş olamaz.", nameof(name));
-            if (price <= 0)
-                throw new ArgumentOutOfRangeException(nameof(price), "Fiyat 0'dan büyük olmalıdır.");
-            if (stock == null)
-                throw new ArgumentNullException(nameof(stock), "Stok bilgisi boş olamaz.");
-
-            Id = Guid.NewGuid();
-            Name = name;
-            Price = price;
-            Stock = stock;
-        }
+        Name = name;
+        Price = price;
+        Stock = stock;
     }
+
+    public static Product Create(ProductCreateModel model)
+    {
+        return new Product(model.Name, model.Price, model.Stock);
+    }
+    
+}
+
+public sealed class ProductCreateModel
+{
+    public string Name { get; set; }
+    public Money Price { get; set; }
+    public int Stock { get; set; }
 }

@@ -8,15 +8,32 @@ namespace ProductApp.Infrastructure.Persistance.EntityFrameworkCore.Products.Ent
     {
         public void Configure(EntityTypeBuilder<Product> builder)
         {
-            builder.HasKey(p => p.Id);
-            builder.Property(p => p.Name).IsRequired().HasMaxLength(100);
-            builder.Property(p => p.Price).HasColumnType("decimal(18,2)");
+            builder.ToTable("Products");
 
-            // Stocku Owned Type olarak tanımlıyoruz
-            builder.OwnsOne(p => p.Stock, s =>
+            builder.HasKey(p => p.Id);
+
+            builder.Property(p => p.Name)
+                .HasMaxLength(200)
+                .IsRequired();
+
+            builder.OwnsOne(p => p.Price, money =>
             {
-                s.Property(st => st.Quantity).HasColumnName("StockQuantity");
+                money.Property(m => m.Amount)
+                    .HasColumnName("Price")
+                    .HasPrecision(18, 2)
+                    .IsRequired();
+
+                money.Property(m => m.Currency)
+                    .HasColumnName("Currency")
+                    .HasMaxLength(3)
+                    .IsRequired();
             });
+
+            builder.Property(p => p.StockQuantity)
+                .IsRequired();
+
+            builder.HasIndex(p => p.Name)
+                .HasDatabaseName("IX_Products_Name");
         }
     }
 }

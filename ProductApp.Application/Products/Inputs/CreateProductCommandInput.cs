@@ -1,11 +1,8 @@
-﻿using ProductApp.Domain.Aggregates.Product.ValueObject;
+﻿namespace ProductApp.Application.Products.Inputs;
 
-namespace ProductApp.Application.Products.Inputs
+public record CreateProductCommandInput
 {
-    public record CreateProductCommandInput
-    {
-        public string Name { get; set; }
-        public decimal Price { get; set; }
-        public Stock Stock  { get; set; }
-    }
+    public string Name { get; init; }
+    public decimal Price { get; init; }
+    public int Stock { get; init; }
 }

@@ -5,22 +5,24 @@ using ProductApp.Domain.Aggregates.Product;
 namespace ProductApp.Infrastructure.Persistance.EntityFrameworkCore.Products
 {
 
-    public class ProductRepository(ProductDbContext context) : IProductRepository
+    public sealed class ProductRepository : IProductRepository
     {
-        private readonly ProductDbContext _context = context;
+        private readonly ProductDbContext context;
 
 
-        public async Task CreateAsync(Product product)
+        public ProductRepository(ProductDbContext context)
         {
-            await _context.Products.AddAsync(product);
+            this.context = context;
         }
 
-        public async Task<List<Product>> GetPagedAsync(int pageNumber, int pageSize)
+        public async Task CreateAsync(Product product, CancellationToken cancellationToken)
         {
-            return await _context.Products
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+            await context.Products.AddAsync(product, cancellationToken);
+        }
+
+        public Task<List<Product>> GetPagedAsync(int pageNumber, int pageSize)
+        {
+            throw new NotImplementedException();
         }
     }
 }

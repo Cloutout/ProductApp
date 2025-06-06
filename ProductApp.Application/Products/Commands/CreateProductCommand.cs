@@ -2,31 +2,50 @@
 using ProductApp.Application.Common;
 using ProductApp.Application.Products.Inputs;
 using ProductApp.Domain.Aggregates.Product;
+using ProductApp.Domain.Aggregates.Product.ValueObject;
 
-namespace ProductApp.Application.Products.Commands
+namespace ProductApp.Application.Products.Commands;
+
+public class CreateProductCommand : IRequest
 {
-    public record CreateProductCommand(string Name, decimal Price, int StockQuantity) : IRequest<Guid>;
+    public CreateProductCommandInput Input { get; }
 
-    public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Guid>
+    private CreateProductCommand(CreateProductCommandInput input)
     {
-        private readonly IProductRepository _repository;
-        private readonly IUnitOfWork _unitOfWork;
+        Input = input;
+    }
 
-        public CreateProductCommandHandler(IProductRepository repository, IUnitOfWork unitOfWork)
+    public static CreateProductCommand Create(CreateProductCommandInput input)
+    {
+        return new CreateProductCommand(input);
+    }
+}
+
+public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductCommand>
+{
+    private readonly IUnitOfWork unitOfWork;
+    private readonly IProductRepository productRepository;
+
+    public CreateProductCommandHandler(IUnitOfWork unitOfWork, IProductRepository productRepository)
+    {
+        this.unitOfWork = unitOfWork;
+        this.productRepository = productRepository;
+    }
+
+    public async Task Handle(CreateProductCommand request, CancellationToken cancellationToken)
+    {
+        var price = new Money(request.Input.Price);
+
+        var productCreateModel = new ProductCreateModel
         {
-            _repository = repository;
-            _unitOfWork = unitOfWork;
-        }
+            Name = request.Input.Name,
+            Price = price,
+            Stock = request.Input.Stock
+        };
 
-        public async Task<Guid> Handle(CreateProductCommand request, CancellationToken cancellationToken)
-        {
-            var stock = new Domain.Aggregates.Product.ValueObject.Stock(request.StockQuantity);
-            var product = new Product(request.Name, request.Price, stock);
+        var product = Product.Create(productCreateModel);
 
-            await _repository.CreateAsync(product);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            return product.Id;
-        }
+        await productRepository.CreateAsync(product, cancellationToken).ConfigureAwait(false);
+        await unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 }

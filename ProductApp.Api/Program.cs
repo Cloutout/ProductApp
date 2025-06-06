@@ -1,51 +1,28 @@
-using Microsoft.EntityFrameworkCore;
-using ProductApp.Api;
-using ProductApp.Api.EndpointMappings;
-using ProductApp.Application;
-using ProductApp.Application.Common;
-using ProductApp.Infrastructure.Persistance.EntityFrameworkCore;
-using ProductApp.Infrastructure.Persistance.EntityFrameworkCore.Products;
+using ProductApp.Application.Products.Commands;
+using ProductApp.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services
-
-    .AddSwaggerExt();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 
-
-builder.Services.AddDbContext<ProductDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateProductCommand).Assembly));
 
 
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-
-
-builder.Services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<ProductDbContext>());
-
-
-builder.Services.AddMediatR(cfg => {
-    cfg.RegisterServicesFromAssembly(typeof(ProductApp.Application.Products.Commands.CreateProductCommand).Assembly);
-});
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwaggerExt();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-
-app.MapProductEndpoints();
-
-
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<ProductDbContext>();
-    await context.Database.EnsureCreatedAsync();
-}
+app.MapControllers();
 
 app.Run();

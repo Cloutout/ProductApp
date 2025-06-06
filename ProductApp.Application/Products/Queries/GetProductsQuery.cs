@@ -1,43 +1,41 @@
 ﻿using MediatR;
 using ProductApp.Application.Common;
-using ProductApp.Application.Common.Pagination;
+using ProductApp.Application.Products.Inputs;
+using ProductApp.Application.Products.Mappers;
 using ProductApp.Application.Products.Outputs;
 
-namespace ProductApp.Application.Products.Queries
+namespace ProductApp.Application.Products.Queries;
+
+public sealed class GetProductsQuery : IRequest<GetProductsQueryOutput>
 {
-    public record GetProductsQuery(int PageNumber, int PageSize) : IRequest<PagedResult<GetProductsQueryOutput>>;
+    private GetProductsQueryInput Input { get; }
 
-    public class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, PagedResult<GetProductsQueryOutput>>
+    private GetProductsQuery(GetProductsQueryInput input)
     {
-        private readonly IProductRepository _repository;
+        Input = input;
+    }
 
-        public GetProductsQueryHandler(IProductRepository repository)
+    public static GetProductsQuery Create(GetProductsQueryInput input)
+    {
+        return new GetProductsQuery(input);
+    }
+
+    public sealed class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, GetProductsQueryOutput>
+    {
+        private readonly IProductReadRepository productReadRepository;
+        private readonly ProductMapper productMapper;
+
+        public GetProductsQueryHandler(IProductReadRepository productReadRepository, ProductMapper productMapper)
         {
-            _repository = repository;
+            this.productReadRepository = productReadRepository;
+            this.productMapper = productMapper;
         }
 
-        public async Task<PagedResult<GetProductsQueryOutput>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
+        public async Task<GetProductsQueryOutput> Handle(GetProductsQuery request, CancellationToken cancellationToken)
         {
-           
-            var pageNumber = request.PageNumber <= 0 ? 1 : request.PageNumber;
-            var pageSize = request.PageSize <= 0 ? 25 : request.PageSize;
-
-            var products = await _repository.GetPagedAsync(pageNumber, pageSize);
-
-            var items = products.Select(p => new GetProductsQueryOutput
-            {
-                
-                Name = p.Name,
-                Price = p.Price,
-                Stock = p.Stock
-            }).ToList();
-
-            return new PagedResult<GetProductsQueryOutput>
-            {
-                Items = items,
-                PageNumber = pageNumber,
-                PageSize = pageSize
-            };
+            var requestModel = productMapper.MapToGetProductByFilterRequestModel(request.Input);
+            var productsResult = await productReadRepository.GetProductsByFilters(requestModel, cancellationToken).ConfigureAwait(false);
+            return productMapper.MapToGetProductsQueryOutput(productsResult);
         }
     }
 }

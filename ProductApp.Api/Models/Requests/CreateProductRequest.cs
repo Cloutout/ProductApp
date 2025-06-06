@@ -1,6 +1,4 @@
-﻿using ProductApp.Domain.Aggregates.Product.ValueObject;
-
-namespace ProductApp.Api.Models.Requests
+﻿namespace ProductApp.Api.Models.Requests
 {
     public class CreateProductRequest
     {
