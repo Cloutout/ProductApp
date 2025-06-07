@@ -7,27 +7,28 @@ using ProductApp.Application.Products.Mappers;
 using ProductApp.Infrastructure.Persistance.EntityFrameworkCore;
 using ProductApp.Infrastructure.Persistance.EntityFrameworkCore.Products;
 
-namespace ProductApp.Infrastructure.Extensions
+namespace ProductApp.Infrastructure.Extensions;
+
+public static class ServiceCollectionExtensions
 {
-    public static class InfrastructureExtensions
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
-        {
-            // Database
-            services.AddDbContext<ProductDbContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+        // Database
+        services.AddDbContext<ProductDbContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
             // Unit of Work
             services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<ProductDbContext>());
 
-            // Repositories
-            services.AddScoped<IProductRepository, ProductRepository>();
-            services.AddScoped<IProductReadRepository, ProductReadRepository>();
+        // Repositories
+        services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IProductReadRepository, ProductReadRepository>();
+        //services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            // Mappers
-            services.AddScoped<ProductMapper>();
+        // Mappers
+        services.AddScoped<ProductMapper>();
 
-            return services;
-        }
+        return services;
     }
+}
 }

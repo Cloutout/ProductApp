@@ -28,13 +28,13 @@ public sealed class ProductsController : ControllerBase
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var commandInput = ProductEndpointMappings.ToCreateCommandInput(request);
-            var command = CreateProductCommand.Create(commandInput);
+        var commandInput = ProductEndpointMappings.ToCreateCommandInput(request);
+        var command = CreateProductCommand.Create(commandInput);
 
-            await mediator.Send(command, cancellationToken);
+        await mediator.Send(command, cancellationToken);
 
-            return Ok(new CreateProductResponse { Message = "Ürün başarıyla oluşturuldu" });
-        }
+        return Ok(new CreateProductResponse { Message = "Ürün başarıyla oluşturuldu" });
+    }
         catch (ArgumentException ex)
         {
             return BadRequest(new { Error = ex.Message });
@@ -50,13 +50,13 @@ public sealed class ProductsController : ControllerBase
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var queryInput = ProductEndpointMappings.ToGetQueryInput(request);
-            var query = GetProductsQuery.Create(queryInput);
+        var queryInput = ProductEndpointMappings.ToGetQueryInput(request);
+        var query = GetProductsQuery.Create(queryInput);
 
-            var result = await mediator.Send(query, cancellationToken);
+        var result = await mediator.Send(query, cancellationToken);
 
-            return Ok(result);
-        }
+        return Ok(result);
+    }
         catch (Exception ex)
         {
             return StatusCode(500, new { Error = "Bir hata oluştu", Details = ex.Message });
