@@ -8,7 +8,7 @@ namespace ProductApp.Application.Products.Queries;
 
 public sealed class GetProductsQuery : IRequest<GetProductsQueryOutput>
 {
-    private GetProductsQueryInput Input { get; }
+    public GetProductsQueryInput Input { get; }
 
     private GetProductsQuery(GetProductsQueryInput input)
     {
@@ -19,23 +19,23 @@ public sealed class GetProductsQuery : IRequest<GetProductsQueryOutput>
     {
         return new GetProductsQuery(input);
     }
+}
 
-    public sealed class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, GetProductsQueryOutput>
+public sealed class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, GetProductsQueryOutput>
+{
+    private readonly IProductReadRepository productReadRepository;
+    private readonly ProductMapper productMapper;
+
+    public GetProductsQueryHandler(IProductReadRepository productReadRepository, ProductMapper productMapper)
     {
-        private readonly IProductReadRepository productReadRepository;
-        private readonly ProductMapper productMapper;
+        this.productReadRepository = productReadRepository;
+        this.productMapper = productMapper;
+    }
 
-        public GetProductsQueryHandler(IProductReadRepository productReadRepository, ProductMapper productMapper)
-        {
-            this.productReadRepository = productReadRepository;
-            this.productMapper = productMapper;
-        }
-
-        public async Task<GetProductsQueryOutput> Handle(GetProductsQuery request, CancellationToken cancellationToken)
-        {
-            var requestModel = productMapper.MapToGetProductByFilterRequestModel(request.Input);
-            var productsResult = await productReadRepository.GetProductsByFilters(requestModel, cancellationToken).ConfigureAwait(false);
-            return productMapper.MapToGetProductsQueryOutput(productsResult);
-        }
+    public async Task<GetProductsQueryOutput> Handle(GetProductsQuery request, CancellationToken cancellationToken)
+    {
+        var requestModel = productMapper.MapToGetProductByFilterRequestModel(request.Input);
+        var productsResult = await productReadRepository.GetProductsByFilters(requestModel, cancellationToken).ConfigureAwait(false);
+        return productMapper.MapToGetProductsQueryOutput(productsResult);
     }
 }
