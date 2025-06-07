@@ -35,6 +35,6 @@ public sealed class Product : IAggregateRoot
 public sealed class ProductCreateModel
 {
     public string Name { get; set; }
-    public Money Price { get; set; }
+    public decimal Price { get; set; }
     public int Stock { get; set; }
 }

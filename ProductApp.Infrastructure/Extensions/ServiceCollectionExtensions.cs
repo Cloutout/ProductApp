@@ -1,0 +1,33 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using ProductApp.Application;
+using ProductApp.Application.Common;
+using ProductApp.Application.Products.Mappers;
+using ProductApp.Infrastructure.Persistance.EntityFrameworkCore;
+using ProductApp.Infrastructure.Persistance.EntityFrameworkCore.Products;
+
+namespace ProductApp.Infrastructure.Extensions
+{
+    public static class InfrastructureExtensions
+    {
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        {
+            // Database
+            services.AddDbContext<ProductDbContext>(options =>
+                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+
+            // Unit of Work
+            services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<ProductDbContext>());
+
+            // Repositories
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IProductReadRepository, ProductReadRepository>();
+
+            // Mappers
+            services.AddScoped<ProductMapper>();
+
+            return services;
+        }
+    }
+}

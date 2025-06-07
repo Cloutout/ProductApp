@@ -16,4 +16,5 @@ namespace ProductApp.Infrastructure.Persistance.EntityFrameworkCore
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
             base.OnModelCreating(modelBuilder);
         }
+    }
 }

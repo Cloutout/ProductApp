@@ -2,7 +2,6 @@
 using ProductApp.Application.Common;
 using ProductApp.Application.Products.Inputs;
 using ProductApp.Domain.Aggregates.Product;
-using ProductApp.Domain.Aggregates.Product.ValueObject;
 
 namespace ProductApp.Application.Products.Commands;
 
@@ -34,12 +33,11 @@ public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductC
 
     public async Task Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
-        var price = new Money(request.Input.Price);
-
+        // Domain validation ProductCreateModel içinde yapılacak
         var productCreateModel = new ProductCreateModel
         {
             Name = request.Input.Name,
-            Price = price,
+            Price = request.Input.Price,
             Stock = request.Input.Stock
         };
 
